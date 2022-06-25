@@ -3,12 +3,9 @@ const express = require ('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
+const config = require('./utils/config')
 
-require('dotenv').config()
-
-const url = process.env.MONGODB_URI
-
-mongoose.connect(url)
+mongoose.connect(config.MONGODB_URI)
     .then(result => console.log('connected to MongoDB'))
     .catch(error => console.log('error connecting to MongoDB', error.message))
 
@@ -61,7 +58,7 @@ app.post('/api/tickets', (req, res) => {
         })
 })
 
-const PORT = process.env.PORT
+const PORT = config.PORT
 
 app.listen(PORT, () => {
     console.log(`Server running on Port ${PORT}`)
