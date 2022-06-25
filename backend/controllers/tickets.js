@@ -1,61 +1,71 @@
 const ticketsRouter = require('express').Router()
 const Ticket = require('../models/ticket')
 
-ticketsRouter.get('/', (req, res) => {
-  Ticket.find({}).then(tickets => {
+ticketsRouter.get('/', async (req, res) => {
+    const tickets = await Ticket.find({})
     res.json(tickets)
-  })
 })
 
-ticketsRouter.get('/:id', (req, res, next) => {
-  Ticket.findById(req.params.id)
-    .then(ticket => {
-      if (ticket) {
-        res.json(ticket)
-      } else {
-        res.status(404).end()
-      }
-    })
-    .catch(error => next(error))
+ticketsRouter.get('/:id', async (req, res, next) => {
+//   Ticket.findById(req.params.id)
+//     .then(ticket => {
+//       if (ticket) {
+//         res.json(ticket)
+//       } else {
+//         res.status(404).end()
+//       }
+//     })
+//     .catch(error => next(error))
+    try {
+        const ticket = await Ticket.findById(req.params.id)
+        ticket ? res.json(ticket) : res.status(404).end()
+    } catch (error) {
+        next(error)
+    }
 })
 
-ticketsRouter.post('/', (req, res, next) => {
-  const body = req.body
+ticketsRouter.post('/', async (req, res, next) => {
+    const body = req.body
 
-  const ticket = new Ticket({
-    content: body.content,
-    important: body.important || false,
-    date: new Date()
-  })
-
-  ticket.save()
-    .then(savedTicket => {
-      res.json(savedTicket)
+    const ticket = new Ticket({
+        app: body.app,
+        priority: body.priority || 'L',
+        description: body.description
     })
-    .catch(error => next(error))
+    try {
+        const savedTicket = await ticket.save()
+        res.json(savedTicket)
+    } catch (error) {
+        next(error)
+    }
 })
 
-ticketsRouter.delete('/:id', (req, res, next) => {
-  Ticket.findByIdAndRemove(req.params.id)
-    .then(() => {
-      res.status(204).end()
-    })
-    .catch(error => next(error))
+ticketsRouter.delete('/:id', async (req, res, next) => {
+    try {
+        await Ticket.findByIdAndRemove(req.params.id)
+        res.status(204).end()
+    }
+    catch {
+        next(error)
+    }
+
 })
 
-ticketsRouter.put('/:id', (req, res, next) => {
-  const body = req.body
+ticketsRouter.put('/:id', async (req, res, next) => {
+    const body = req.body
 
-  const ticket = {
-    content: body.content,
-    important: body.important,
-  }
+    const ticket = {
+        priority: body.priority,
+        description: body.description
+    }
 
-  Ticket.findByIdAndUpdate(req.params.id, ticket, { new: true })
-    .then(updatedTicket => {
-      res.json(updatedTicket)
-    })
-    .catch(error => next(error))
+    try {
+        const updatedTicket = await Ticket.findByIdAndUpdate(req.params.id, ticket, { new: true })
+        res.json(updatedTicket)
+    }
+    catch {
+        next(error)
+    }
 })
 
 module.exports = ticketsRouter

@@ -3,7 +3,10 @@ POST http://localhost:3003/api/tickets
 Content-TYpe: application/json
 
 {
-    "app": "Hero",
+    "app": "Mea",
     "priority": "H",
-    "description": "Tell me lies"
+    "description": "Nightomea"
 }
+
+### Delete
+DELETE http://localhost:3003/api/tickets/62b6c9dd983f8a595edcf65f
