@@ -1,0 +1,9 @@
+### Add ticket
+POST http://localhost:3003/api/tickets
+Content-TYpe: application/json
+
+{
+    "app": "Hero",
+    "priority": "H",
+    "description": "Tell me lies"
+}
