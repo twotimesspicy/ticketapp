@@ -1,12 +1,23 @@
 ### Add ticket
 POST http://localhost:3003/api/tickets
-Content-TYpe: application/json
+Content-Type: application/json
 
 {
     "app": "Mea",
     "priority": "H",
-    "description": "Nightomea"
+    "description": "Nightomea",
+    "userId": "62b962cc6e95029520745444"
 }
 
 ### Delete
 DELETE http://localhost:3003/api/tickets/62b6c9dd983f8a595edcf65f
+
+### New User
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "root",
+    "name": "Stephen Root",
+    "password": "root"
+}
