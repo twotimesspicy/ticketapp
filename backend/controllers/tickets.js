@@ -1,6 +1,8 @@
 // Using express-async-errors in place of try/catch blocks
 const ticketsRouter = require('express').Router()
 const Ticket = require('../models/ticket')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 ticketsRouter.get('/', async (req, res) => {
     const tickets = await Ticket.find({}).populate('user', { username: 1, name: 1 })
@@ -12,16 +14,28 @@ ticketsRouter.get('/:id', async (req, res) => {
     ticket ? res.json(ticket) : res.status(404).end()
 })
 
+const getTokenFrom = (req) => {
+    const authorization = req.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+        return authorization.substring(7)
+    }
+    return null
+}
+
 ticketsRouter.post('/', async (req, res) => {
     const body = req.body
-
-    const user = await User.findById(body.userId)
+    const token = getTokenFrom(req)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+        return res.status(401).json({ error: 'token missing or invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
 
     const ticket = new Ticket({
         app: body.app,
         priority: body.priority || 'L',
         description: body.description,
-        user: user._id,
+        user: user.id,
     })
 
     const savedTicket = await ticket.save()
